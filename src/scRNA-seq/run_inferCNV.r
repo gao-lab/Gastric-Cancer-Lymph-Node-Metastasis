@@ -1,7 +1,8 @@
 library(Seurat)
 library(infercnv)
 
-GC <- readRDS("processed_data/data_B2-19/GC_qc500_mt0.2_ct_subtype.rds")
+GC <- readRDS("plots/data/GC_no_TLB_new_meta.rds")
+
 # prepare matrix file
 raw_matrix <- GC@assays$RNA@counts
 

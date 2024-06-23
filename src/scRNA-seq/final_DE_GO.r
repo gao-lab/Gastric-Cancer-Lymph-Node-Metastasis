@@ -35,6 +35,9 @@ Idents(bcell.batch.corrected) <- "subtype1"
 
 epithelial.batch.corrected <- readRDS("plots/data/epithelial_new_meta.rds")
 
+cd8_tcell.batch.corrected <- readRDS("processed_data/data_B2-19/cell_typing/tcell/cd8_tcell.batch_corrected.ct.rds")
+
+
 
 
 up_GO_enrichment <- function(markers){
@@ -709,7 +712,7 @@ library(cowplot)
 # library(ggstatsplot)
 library(scales)
 
-cd8_tcell.batch.corrected <- readRDS("processed_data/data_B2-19/cell_typing/tcell/cd8_tcell.batch_corrected.ct.rds")
+cd8_tcell.batch.corrected <- readRDS("plots/data/cd8_tcell_new_meta.rds")
 
 
 unique(cd8_tcell.batch.corrected$subtype1)

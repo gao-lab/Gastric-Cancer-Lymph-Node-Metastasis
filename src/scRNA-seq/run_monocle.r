@@ -7,6 +7,73 @@ packageVersion("monocle")
 
 set.seed=0
 
+GC_plasma <-readRDS("processed_data/data_B2-19/cell_typing/bcell/plasma.batch.corrected_ct_0.5.rds")
+meta_condition <- read.csv("processed_data/data_B2-19/metadata_all_ct_subtype_condition_noTLB.csv", row.names = 1)
+
+meta <- meta_condition[colnames(GC_plasma),]
+all(rownames(meta)==colnames(GC_plasma))
+GC_plasma$LN_condition <- meta$LN_condition
+
+table(GC_plasma$cell_type)
+
+Idents(GC_plasma) <- "cell_type"
+table(Idents(GC_plasma))
+
+# plasma_markers <- FindAllMarkers(GC_plasma, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+# write.csv(plasma_markers, "processed_data/data_B2-19/cell_typing/bcell/plasma_monocle_markers.csv")
+
+# subset big subtype to 500 cells
+set.seed=0
+cell_use <- NULL
+for(subtype in unique(GC_plasma$cell_type)){
+    print(subtype)
+    print(sum(GC_plasma$cell_type==subtype))
+    if(sum(GC_plasma$cell_type==subtype) > 500){
+        rowname <- sample(colnames(GC_plasma)[GC_plasma$cell_type==subtype], 500, replace = FALSE)
+    }else{
+        rowname <- colnames(GC_plasma)[GC_plasma$cell_type==subtype]
+    }
+    cell_use <- c(cell_use,rowname)
+    print(length(cell_use))
+}
+
+GC_plasma_use <- subset(GC_plasma,cells=cell_use)
+
+saveRDS(GC_plasma_use, "processed_data/data_B2-19/monocle/GC_plasma_use.rds")
+
+GC_tcell <-readRDS("plots/data/tcell_no_TLB_new_meta.rds")
+
+GC_NK <- subset(GC_tcell,subset= subtype1 %in% c("NK1","NK2","NK3"))
+
+GC_NK$cell_type <- GC_NK$subtype1
+Idents(GC_NK) <- "cell_type"
+table(GC_NK$cell_type)
+
+# nk_markers <- FindAllMarkers(GC_NK, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+# write.csv(nk_markers, "processed_data/data_B2-19/cell_typing/tcell/NK_monocle_markers.csv")
+
+# subset big subtype to 1000 cells
+set.seed=0
+nk_use <- NULL
+for(subtype in unique(GC_NK$cell_type)){
+    print(subtype)
+    print(sum(GC_NK$cell_type==subtype))
+    if(sum(GC_NK$cell_type==subtype) > 1000){
+        rowname <- sample(colnames(GC_NK)[GC_NK$cell_type==subtype], 1000, replace = FALSE)
+    }else{
+        rowname <- colnames(GC_NK)[GC_NK$cell_type==subtype]
+    }
+    nk_use <- c(nk_use,rowname)
+    print(length(rowname))
+}
+GC_nk_use <- subset(GC_NK,cells=nk_use)
+
+GC_nk_use$cell_type <- as.character(GC_nk_use$cell_type)
+table(GC_nk_use$cell_type)
+DefaultAssay(GC_nk_use) <- "RNA"
+
+saveRDS(GC_nk_use, "processed_data/data_B2-19/monocle/GC_nk_use.rds")
+
 GC_plasma_use <- readRDS("processed_data/data_B2-19/monocle/GC_plasma_use.rds")
 
 plasma_markers <- read.csv("processed_data/data_B2-19/cell_typing/bcell/plasma_monocle_markers.csv", row.names = 1)
@@ -187,7 +254,6 @@ monocle::plot_cell_trajectory(cds_nk, color_by = "Pseudotime")
 
 # cds_nk <- readRDS("processed_data/data_B2-19/monocle/nk_self_markers_root.rds")
 
-# branch analysis ---------------------------------------------------------
 BEAM_res <- BEAM(cds_nk, branch_point = 1, cores =30)
 BEAM_res <- BEAM_res[order(BEAM_res$qval),]
 BEAM_res <- BEAM_res[,c("gene_short_name", "pval", "qval")]
@@ -222,79 +288,5 @@ plot_genes_branched_pseudotime(cds_nk[cds_nk_genes,],
                                branch_point = 1,
                                color_by = "cell_type",
                                ncol = 3)
-
-
-
-# 提前停止脚本执行
-return()
-
-
-
-GC_plasma <-readRDS("processed_data/data_B2-19/cell_typing/bcell/plasma.batch.corrected_ct_0.5.rds")
-meta_condition <- read.csv("processed_data/data_B2-19/metadata_all_ct_subtype_condition_noTLB.csv", row.names = 1)
-
-meta <- meta_condition[colnames(GC_plasma),]
-all(rownames(meta)==colnames(GC_plasma))
-GC_plasma$LN_condition <- meta$LN_condition
-
-table(GC_plasma$cell_type)
-
-Idents(GC_plasma) <- "cell_type"
-table(Idents(GC_plasma))
-
-# plasma_markers <- FindAllMarkers(GC_plasma, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
-# write.csv(plasma_markers, "processed_data/data_B2-19/cell_typing/bcell/plasma_monocle_markers.csv")
-
-# subset big subtype to 500 cells
-set.seed=0
-cell_use <- NULL
-for(subtype in unique(GC_plasma$cell_type)){
-    print(subtype)
-    print(sum(GC_plasma$cell_type==subtype))
-    if(sum(GC_plasma$cell_type==subtype) > 500){
-        rowname <- sample(colnames(GC_plasma)[GC_plasma$cell_type==subtype], 500, replace = FALSE)
-    }else{
-        rowname <- colnames(GC_plasma)[GC_plasma$cell_type==subtype]
-    }
-    cell_use <- c(cell_use,rowname)
-    print(length(cell_use))
-}
-
-GC_plasma_use <- subset(GC_plasma,cells=cell_use)
-
-saveRDS(GC_plasma_use, "processed_data/data_B2-19/monocle/GC_plasma_use.rds")
-
-GC_tcell <-readRDS("plots/data/tcell_no_TLB_new_meta.rds")
-
-GC_NK <- subset(GC_tcell,subset= subtype1 %in% c("NK1","NK2","NK3"))
-
-GC_NK$cell_type <- GC_NK$subtype1
-Idents(GC_NK) <- "cell_type"
-table(GC_NK$cell_type)
-
-# nk_markers <- FindAllMarkers(GC_NK, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
-# write.csv(nk_markers, "processed_data/data_B2-19/cell_typing/tcell/NK_monocle_markers.csv")
-
-# subset big subtype to 1000 cells
-set.seed=0
-nk_use <- NULL
-for(subtype in unique(GC_NK$cell_type)){
-    print(subtype)
-    print(sum(GC_NK$cell_type==subtype))
-    if(sum(GC_NK$cell_type==subtype) > 1000){
-        rowname <- sample(colnames(GC_NK)[GC_NK$cell_type==subtype], 1000, replace = FALSE)
-    }else{
-        rowname <- colnames(GC_NK)[GC_NK$cell_type==subtype]
-    }
-    nk_use <- c(nk_use,rowname)
-    print(length(rowname))
-}
-GC_nk_use <- subset(GC_NK,cells=nk_use)
-
-GC_nk_use$cell_type <- as.character(GC_nk_use$cell_type)
-table(GC_nk_use$cell_type)
-DefaultAssay(GC_nk_use) <- "RNA"
-
-saveRDS(GC_nk_use, "processed_data/data_B2-19/monocle/GC_nk_use.rds")
 
 
