@@ -20,14 +20,6 @@ my_colors2 <- c("#ef8775", "#89afd2")
 my_colors2_2 <- c(my_colors5[4], my_colors5[2])
 my_colors4 = my_colors7[c(1,3,2,4)]
 
-# #create colors with any number
-# cols = colorRampPalette(colors = c("#e2ad9f","#d37562","#d7c6de","#9b7aad",
-#                                             "#90aed2","#c0d6eb"))(length(unique(tcell.batch.corrected$subtype1))))
-
-# expression dotplot
-  # scale_color_gradient(low = "lightgrey", high = "#c45a48", name = "Expression Level")
-
-
 packageVersion("Seurat")
 
 packageVersion("SeuratObject")
@@ -38,8 +30,6 @@ meta=read.csv("processed_data/data_B2-19/metadata_all_ct_subtype_condition_noTLB
 table(meta$cell_type)
 
 dim(meta)
-
-
 
 GC <- readRDS("plots/data/GC_no_TLB_new_meta.rds")
 
@@ -60,21 +50,6 @@ plot(p)
 pdf("plots/figures/figS1B_umap.pdf",width=6, height=5)
 plot(p)
 dev.off()
-
-options(repr.plot.width=5.5, repr.plot.height=4.5)
-p <- DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type1",label=FALSE)
-plot(p)
-pdf("plots/figures/fig1A_umap.pdf",width=5.5, height=4.5)
-plot(p)
-dev.off()
-
-options(repr.plot.width=6, repr.plot.height=5)
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols=c("#d7c6de","#c0d6eb","#738bc1","#e2ad9f","#d37562","#809b5c","#9b7aad"))
-
-options(repr.plot.width=6, repr.plot.height=5)
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols=c("#e2ad9f","#d7c6de","#c0d6eb","#738bc1","#d37562","#809b5c","#6ea39f"))
 
 user_markers<-c("CD2", "CD3E", "CD3D", #T cell
                 "CD68", "CSF1R","CD14", #macro
@@ -100,8 +75,6 @@ DotPlot(GC, features = user_markers, group.by = "cell_type") +
   RotatedAxis() +
   scale_color_gradient(low = "lightgrey", high = "#c45a48", name = "Expression Level")
 dev.off()
-
-
 
 
 # GC_meta <- GC@meta.data
@@ -134,89 +107,6 @@ plot(p1d)
 
 ggsave(filename = "plots/figures/fig1D_fraction.pdf", plot = p1d, width = 4, height = 3.5)
 
-# try color
-options(repr.plot.width=4, repr.plot.height=3.5)
-my_colors7=c("#e2ad9f","#809b5c","#c0d6eb","#d37562","#d7c6de","#9b7aad","#90aed2")
-
-cluster_group <- table(meta$cell_type, meta$LN_condition)
-cluster_group <- melt(cluster_group, id.vars = "LN_condition")
-colnames(cluster_group) <- c("cell_type", "LN_condition", "Freq")
-cluster_group$cell_type <- as.factor(cluster_group$cell_type)
-
-cluster_group$LN_condition <- factor(cluster_group$LN_condition,
-       levels=c("Adj.Nor", "Pri.GC", "Met.LN", "Neg.LN", "PBMC"))
-# pdf("cell_typing/cell_type_composition.pdf")
-p1d <- ggplot(cluster_group, aes(x = LN_condition, y = Freq, fill = cell_type)) +
-  geom_bar(position = "fill", stat = "identity")+
-  scale_fill_brewer(palette = "Set2") +
-  theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1))+
-  theme(panel.background = element_blank())+
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
-  theme(axis.line = element_line())+
-  theme(axis.text.y = element_text(color = "black"))+
-  theme(axis.text.x = element_text(color = "black"))+
-  ylab("Fraction among all cells")
-plot(p1d)
-# dev.off()
-
-ggsave(filename = "plots/figures/fig1D_fraction.pdf", plot = p1d, width = 4, height = 3.5)
-
-
-
-# not used
-options(repr.plot.width=4, repr.plot.height=3.5)
-my_colors7=c("#e2ad9f","#809b5c","#c0d6eb","#d37562","#d7c6de","#9b7aad","#90aed2")
-
-cluster_group <- table(GC_meta$cell_type, GC_meta$LN_condition)
-cluster_group <- melt(cluster_group, id.vars = "LN_condition")
-colnames(cluster_group) <- c("cell_type", "LN_condition", "Freq")
-cluster_group$cell_type <- as.factor(cluster_group$cell_type)
-
-cluster_group$LN_condition <- factor(cluster_group$LN_condition,
-       levels=c("N", "Pri.GC", "Met.LN", "Neg.LN", "PBMC"))
-# pdf("cell_typing/cell_type_composition.pdf")
-ggplot(cluster_group, aes(x = LN_condition, y = Freq, fill = cell_type)) +
-  geom_bar(position = "fill", stat = "identity")+
-  scale_fill_manual(values = my_colors7) +
-  theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1))+
-  theme(panel.background = element_blank())+
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
-  theme(axis.line = element_line())+
-  theme(axis.text.y = element_text(color = "black"))+
-  theme(axis.text.x = element_text(color = "black"))+
-  ylab("% among all cells")
-
-# dev.off()
-
-# ggplot(cluster_group, aes(x = cell_type, y = Freq, fill = LN_condition)) +
-#   geom_bar(position = "fill", stat = "identity")+
-#   theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1))+
-#   theme(panel.background = element_blank())+
-#   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
-#   theme(axis.line = element_line())+
-#   theme(axis.text.y = element_text(color = "black"))+
-#   theme(axis.text.x = element_text(color = "black"))
-
-# ggplot(cluster_group, aes(x = cell_type, y = Freq, fill = LN_condition)) +
-#   geom_bar(stat = "identity")+
-#   theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1))+
-#   theme(panel.background = element_blank())+
-#   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
-#   theme(axis.line = element_line())+
-#   theme(axis.text.y = element_text(color = "black"))+
-#   theme(axis.text.x = element_text(color = "black"))
-
-# ggplot(cluster_group, aes(x = LN_condition, y = Freq, fill = cell_type)) +
-#   geom_bar(stat = "identity")+
-#   theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1))+
-#   theme(panel.background = element_blank())+
-#   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
-#   theme(axis.line = element_line())+
-#   theme(axis.text.y = element_text(color = "black"))+
-#   theme(axis.text.x = element_text(color = "black"))
-
-# 
-
 epithelial.batch.corrected <- readRDS("plots/data/epithelial_new_meta.rds")
 Idents(epithelial.batch.corrected) <- "LN_condition"
 
@@ -228,7 +118,6 @@ epithelial.batch.corrected$cnv_score[epithelial.batch.corrected$cnv_score>0.015]
 options(repr.plot.width = 3, repr.plot.height = 3)
 my_colors2 <- c("#ef8775", "#89afd2")
 
-# 绘制小提琴图并应用自定义颜色和y轴刻度
 vln_plot <- VlnPlot(epithelial.batch.corrected, 
                     features = "cnv_score",
                     idents = c("Pri.GC", "Met.LN"),
@@ -237,9 +126,8 @@ vln_plot <- VlnPlot(epithelial.batch.corrected,
               map_signif_level = TRUE, y_position = 0.018) +
   NoLegend() +   
   scale_fill_manual(values = c("Pri.GC" = "#ef8775", "Met.LN" = "#89afd2")) +
- # scale_fill_manual(values = c("Pri.GC" = my_colors5[2], "Met.LN" = my_colors5[4])) +
-  scale_y_continuous(limits = c(0, 0.02), breaks = c(0, 0.01, 0.02)) + # 自定义y轴刻度
-  theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 1))   # 取消x轴标签旋转
+  scale_y_continuous(limits = c(0, 0.02), breaks = c(0, 0.01, 0.02)) + 
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 1))   
 plot(vln_plot)
 
 ggsave(filename = "plots/figures/fig1E_cnv_score.pdf", plot = vln_plot, width = 3, height = 3)
@@ -247,8 +135,6 @@ ggsave(filename = "plots/figures/fig1E_cnv_score.pdf", plot = vln_plot, width = 
 # # color not used备选2色方案
 options(repr.plot.width = 3, repr.plot.height = 3)
 
-
-# 绘制小提琴图并应用自定义颜色和y轴刻度
 vln_plot <- VlnPlot(epithelial.batch.corrected, 
                     features = "cnv_score",
                     idents = c("T", "LN_meta"),
@@ -257,8 +143,8 @@ vln_plot <- VlnPlot(epithelial.batch.corrected,
               map_signif_level = TRUE, y_position = 0.018) +
   NoLegend() +   
   scale_fill_manual(values = c("T" = my_colors5[2], "LN_meta" = my_colors5[4])) +
-  scale_y_continuous(limits = c(0, 0.02), breaks = c(0, 0.01, 0.02)) + # 自定义y轴刻度
-  theme(axis.text.x = element_text(angle = 0, hjust = 1, vjust = 1))   # 取消x轴标签旋转
+  scale_y_continuous(limits = c(0, 0.02), breaks = c(0, 0.01, 0.02)) + 
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, vjust = 1))   
 plot(vln_plot)
 
 meta=read.csv("processed_data/data_B2-19/metadata_all_ct_subtype_condition_noTLB.csv", row.names = 1)
@@ -267,43 +153,41 @@ sample_meta <- unique(meta[, c("sample", "region", "patient", 'LN_condition','LN
                               "patient_condition","patient_condition.LN_condition",
                                "Lauren","Lauren.LN_condition")])
 
-# # 对sample进行normalize后的结果，把所有细胞类型作为一个barplot作图
-# options(repr.plot.width=9, repr.plot.height=9)
-# sample_ct_comp <- list()
-# for(ct_i in c("all", "all_sub", unique(meta$cell_type1))){
-#     if(ct_i == "all"){
-#         sample_ct_comp[[ct_i]] <- table(meta$cell_type1, meta$sample)
-#     }else if(ct_i == "all_sub"){
+# 对sample进行normalize后的结果，把所有细胞类型作为一个barplot作图
+options(repr.plot.width=9, repr.plot.height=9)
+sample_ct_comp <- list()
+for(ct_i in c("all", "all_sub", unique(meta$cell_type1))){
+    if(ct_i == "all"){
+        sample_ct_comp[[ct_i]] <- table(meta$cell_type1, meta$sample)
+    }else if(ct_i == "all_sub"){
+        sample_ct_comp[[ct_i]] <- table(meta$subtype1, meta$sample)
+#     }else if(ct_i == "all_sub1"){
 #         sample_ct_comp[[ct_i]] <- table(meta$subtype1, meta$sample)
-# #     }else if(ct_i == "all_sub1"){
-# #         sample_ct_comp[[ct_i]] <- table(meta$subtype1, meta$sample)
-#     }else{
-#         sample_ct_comp[[ct_i]] <- table(meta[meta$cell_type1==ct_i,]$subtype1, meta[meta$cell_type1==ct_i,]$sample)
-#     }
-#     sample_ct_comp[[ct_i]] <- melt(sample_ct_comp[[ct_i]], id.vars = "sample")
-#     colnames(sample_ct_comp[[ct_i]]) <- c("cell_type1", "sample", "Fraction")
-#     sample_ct_comp[[ct_i]]$cell_type1 <- as.factor(sample_ct_comp[[ct_i]]$cell_type1)
+    }else{
+        sample_ct_comp[[ct_i]] <- table(meta[meta$cell_type1==ct_i,]$subtype1, meta[meta$cell_type1==ct_i,]$sample)
+    }
+    sample_ct_comp[[ct_i]] <- melt(sample_ct_comp[[ct_i]], id.vars = "sample")
+    colnames(sample_ct_comp[[ct_i]]) <- c("cell_type1", "sample", "Fraction")
+    sample_ct_comp[[ct_i]]$cell_type1 <- as.factor(sample_ct_comp[[ct_i]]$cell_type1)
     
-#     # normalize到1
-#     for(condition in unique(sample_ct_comp[[ct_i]]$sample)){
-#         mask=sample_ct_comp[[ct_i]]$sample==condition
-#         sample_ct_comp[[ct_i]]$Fraction[mask]=sample_ct_comp[[ct_i]]$Fraction[mask]/sum(sample_ct_comp[[ct_i]]$Fraction[mask])
-#     }
+    # normalize到1
+    for(condition in unique(sample_ct_comp[[ct_i]]$sample)){
+        mask=sample_ct_comp[[ct_i]]$sample==condition
+        sample_ct_comp[[ct_i]]$Fraction[mask]=sample_ct_comp[[ct_i]]$Fraction[mask]/sum(sample_ct_comp[[ct_i]]$Fraction[mask])
+    }
 
-# }
+}
 
 
-# for(ct_i in names(sample_ct_comp)){
-#     print(ct_i)
-#     sample_ct_comp[[ct_i]]<-merge(sample_ct_comp[[ct_i]], sample_meta, by = "sample")
-# }
+for(ct_i in names(sample_ct_comp)){
+    print(ct_i)
+    sample_ct_comp[[ct_i]]<-merge(sample_ct_comp[[ct_i]], sample_meta, by = "sample")
+}
 
-# saveRDS(sample_ct_comp,"processed_data/data_B2-19/cell_type1_composition/sample_ct_comp.rds")
+saveRDS(sample_ct_comp,"processed_data/data_B2-19/cell_type1_composition/sample_ct_comp.rds")
 
 sample_ct_comp <- readRDS("processed_data/data_B2-19/cell_type1_composition/sample_ct_comp.rds")
-# from cell_type_composition.ipynb
 
-#几个subtype放在一张图上的示例
 my_colors5=c("#DAC5DF","#BBD5EB","#6C8DC1","#EAAB9E","#DD6E60")
 sample_ct_comp[["all"]]$LN_condition <- factor(sample_ct_comp[["all"]]$LN_condition,
                                                                levels=c("Adj.Nor", "Pri.GC", "Met.LN", "Neg.LN", "PBMC"))
@@ -353,7 +237,6 @@ ggsave(filename = "plots/figures/fig3I_GZMB_fraction.pdf", plot = p1, width = 5,
 
 
 
-#特别关注几个亚型，可以单独作图
 options(repr.plot.width=2.5, repr.plot.height=3.8)
 ct_i="T-CD8"
 subtype1 = "CD8_TIM3+ Trm"
@@ -379,7 +262,6 @@ print(subtype1)
 ggsave(filename = "plots/figures/fig2C_tim3_fraction.pdf", plot = p, width = 2.5, height = 3.8)
         
 
-#特别关注几个亚型，可以单独作图
 options(repr.plot.width=2.5, repr.plot.height=3.8)
 ct_i="T-CD8"
 subtype1 = "CD8_LAYN+ Tex"
@@ -405,7 +287,6 @@ print(subtype1)
 ggsave(filename = "plots/figures/fig2D_layn_fraction.pdf", plot = p, width = 2.5, height = 3.8)
         
 
-#特别关注几个亚型，可以单独作图
 options(repr.plot.width=2.5, repr.plot.height=3.8)
 ct_i="T-CD8"
 subtype1 = "CD8_CCL5+ Tex"
@@ -431,7 +312,6 @@ print(subtype1)
 ggsave(filename = "plots/figures/fig2D_ccl5_fraction.pdf", plot = p, width = 2.5, height = 3.8)
         
 
-#特别关注几个亚型，可以单独作图
 options(repr.plot.width=3, repr.plot.height=3.8)
 ct_i="T-CD4"
 subtype1 = "CD4_Tex"
@@ -457,7 +337,6 @@ print(subtype1)
 ggsave(filename = "plots/figures/figS3A_cd4_tex_fraction.pdf", plot = p, width = 3, height = 3.8)
         
 
-#特别关注几个亚型，可以单独作图
 options(repr.plot.width=3, repr.plot.height=4)
 ct_i="T-CD8"
 subtype1 = "CD8_HLA-DRA+ Tem"
@@ -483,7 +362,6 @@ print(subtype1)
 ggsave(filename = "plots/figures/figS5C_HLA_fraction.pdf", plot = p, width = 3, height = 4)
         
 
-#特别关注几个亚型，可以单独作图
 ct_i="DC"
 ncol=1  
 options(repr.plot.width=3.5, repr.plot.height=5)
@@ -537,8 +415,6 @@ ggsave(filename = "plots/figures/figS4D_nk_fraction.pdf", plot = p, width = 10, 
 
 
 
-#特别关注几个亚型，可以单独作图
-# 这里的condition少了PBMC
 options(repr.plot.width=4, repr.plot.height=4.2)
 ct_i="T-CD8"
 subtype1 = 'CD8_GZMB+ Temra'
@@ -567,8 +443,6 @@ ggsave(filename = "plots/figures/figS6B_GZMB_fraction.pdf", plot = p, width = 4,
         
 
 
-#特别关注几个亚型，可以单独作图
-# 这里的condition少了PBMC
 options(repr.plot.width=4, repr.plot.height=4.2)
 ct_i="T-CD8"
 subtype1 = 'CD8_GZMK+ Temra'
@@ -597,8 +471,6 @@ ggsave(filename = "plots/figures/figS6C_GZMK_fraction.pdf", plot = p, width = 4,
         
 
 
-#特别关注几个亚型，可以单独作图
-# 这里的condition少了PBMC
 options(repr.plot.width=4, repr.plot.height=4.2)
 ct_i="T-CD8"
 subtype1 = 'CD8_GZMK+ Temra'
@@ -627,8 +499,6 @@ ggsave(filename = "plots/figures/figS6C_GZMK_fraction.pdf", plot = p, width = 4,
         
 
 
-#特别关注几个亚型，可以单独作图
-# 这里的condition少了PBMC
 options(repr.plot.width=4, repr.plot.height=4.2)
 ct_i="Plasma"
 subtype1 = 'RRM2+ Plasma'
@@ -662,7 +532,6 @@ unique(meta$subtype1[meta$cell_type=="B cell"])
 meta$subtype0 <- meta$subtype1
 meta$subtype0[meta$cell_type1=="Plasma"] <- "Plasma"
 
-# 对sample进行normalize后的结果，把所有细胞类型作为一个barplot作图
 options(repr.plot.width=9, repr.plot.height=9)
 sample_ct_comp <- list()
 ct_i = "B cell"
@@ -681,8 +550,6 @@ tmp<-merge(tmp, sample_meta, by = "sample")
 
 
 
-#特别关注几个亚型，可以单独作图
-# 这里的condition少了PBMC
 options(repr.plot.width=4, repr.plot.height=4.2)
 ct_i="B cell"
 subtype1 = 'Plasma'
@@ -718,7 +585,6 @@ mask <- meta$patient_condition.LN_condition %in% c('Meta_Neg.LN','Meta_PBMC','Me
 meta_patient_condition.LN_condition <- meta[mask,]
 
 
-# 对sample进行normalize后的结果，做矩阵
 patient_condition.LN_condition_sample_ct_comp <- list()
 for(ct_i in c("all", "all_sub", 'T-CD8','T-CD4','B cell','NK','DC','Plasma','Macro','Tgd','Mono','Neutro')){
     if(ct_i == "all"){
@@ -755,7 +621,6 @@ meta_patient_condition.LN_condition <- meta[mask,]
 
 unique(meta_patient_condition.LN_condition$subtype2)
 
-# 对sample进行normalize后的结果，把所有细胞类型作为一个barplot作图
 patient_condition.LN_condition_sample_ct_comp <- list()
 for(ct_i in c('B cell')){
     patient_condition.LN_condition_sample_ct_comp[[ct_i]] <- table(meta_patient_condition.LN_condition[meta_patient_condition.LN_condition$cell_type==ct_i,]$subtype2, 
@@ -831,7 +696,6 @@ for(subtype2 in c("CD8_HLA-DRA+ Tem")){
 }
 ggsave(filename = "plots/figures/fig3C_HLA_fraction.pdf", plot = p, width = 3.5, height = 4)
 
-# for(ct_i in names(patient_condition.LN_condition_sample_ct_comp)){
 ct_i="Neutro"
 print(ct_i)
 ncol=3   
@@ -845,10 +709,6 @@ p <- ggplot(tmp_neutro,
             aes(x=patient_condition.LN_condition, y=Fraction)) + 
       geom_boxplot(aes(fill=patient_condition.LN_condition)) +
         scale_fill_manual(values = my_colors2) +
-#       geom_signif(comparisons = list(
-#                                      c("Meta_Neg.LN", "Neg_Neg.LN")
-#                                      ), 
-#                   map_signif_level=TRUE,y_position = 1.02) +
   geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)+
 scale_y_continuous(limits = c(0, 1.1))+
 facet_wrap(. ~  cell_type1, ncol = ncol) +
@@ -859,7 +719,7 @@ facet_wrap(. ~  cell_type1, ncol = ncol) +
 plot(p)
 ggsave(filename = "plots/figures/figS8A_neutro_fraction.pdf", plot = p, width = 9, height = 3)
 
-# for(ct_i in names(patient_condition.LN_condition_sample_ct_comp)){
+# another color
 ct_i="Neutro"
 print(ct_i)
 ncol=3   
@@ -873,10 +733,6 @@ p <- ggplot(tmp_neutro,
             aes(x=patient_condition.LN_condition, y=Fraction)) + 
       geom_boxplot(aes(fill=patient_condition.LN_condition)) +
         scale_fill_manual(values = my_colors2_2) +
-#       geom_signif(comparisons = list(
-#                                      c("Meta_Neg.LN", "Neg_Neg.LN")
-#                                      ), 
-#                   map_signif_level=TRUE,y_position = 1.02) +
   geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)+
 scale_y_continuous(limits = c(0, 1.1))+
 facet_wrap(. ~  cell_type1, ncol = ncol) +
@@ -944,7 +800,6 @@ ggsave(filename = "plots/figures/fig4A_FCN1_fraction.pdf", plot = p, width = 3.5
 meta_Lauren.LN_condition <- meta[meta$Lauren.LN_condition %in% c('Diffuse_Met.LN','Diffuse_Pri.GC','Intestinal_Pri.GC','Intestinal_Met.LN'),]
 
 
-# 对sample进行normalize后的结果
 Lauren.LN_condition_sample_ct_comp <- list()
 for(ct_i in c("all", "all_sub", 'T-CD8','T-CD4','B cell','NK','DC','Plasma','Macro','Tgd','Mono','Neutro')){
     if(ct_i == "all"){
@@ -969,7 +824,6 @@ for(ct_i in c("all", "all_sub", 'T-CD8','T-CD4','B cell','NK','DC','Plasma','Mac
 }
 
 
-#单独看几个亚型
 options(repr.plot.width=2.8, repr.plot.height=4.2)
 ct_i="DC"
 # mask = Lauren.LN_condition_sample_ct_comp[[ct_i]]$"LN_condition"=="PBMC"
@@ -1008,8 +862,6 @@ meta_LN_condition.LN_station <- meta[meta$LN_condition.LN_station %in% c('Neg.LN
                                                                            'Met.LN_S1','Met.LN_S2'),]
 
 
-# 产生做秩和检验的重要步骤，每次都需要重跑
-# 对sample进行normalize后的结果，把所有细胞类型作为一个barplot作图
 LN_condition.LN_station_sample_ct_comp <- list()
 for(ct_i in c("all", "all_sub", 'T-CD8','T-CD4','B cell','NK','DC','Plasma','Macro','Tgd','Mono','Neutro')){
     if(ct_i == "all"){
@@ -1035,7 +887,6 @@ for(ct_i in c("all", "all_sub", 'T-CD8','T-CD4','B cell','NK','DC','Plasma','Mac
 }
 
 
-#单独看几个亚型
 options(repr.plot.width=3.5, repr.plot.height=3.5)
 
 tmp <- LN_condition.LN_station_sample_ct_comp[["DC"]]
@@ -1131,36 +982,33 @@ type_counts <- tmp %>%
 
 # 按照中位数从大到小对 curated_cancer_type 进行排序
 sorted_types <- tmp %>%
-  filter(!is.na(curated_cancer_type)) %>%  # 删除 NA 值
+  filter(!is.na(curated_cancer_type)) %>%  
   filter(curated_cancer_type %in% type_counts$curated_cancer_type) %>%
   group_by(curated_cancer_type) %>%
   summarise(median_fraction = median(Fraction)) %>%
   arrange(desc(median_fraction)) %>%
   pull(curated_cancer_type)
 
-# 使用 ggplot2 绘制箱线图
 options(repr.plot.width=6, repr.plot.height=3.5)
 ggplot(tmp %>% filter(curated_cancer_type %in% sorted_types), aes(x = factor(curated_cancer_type, levels = sorted_types), y = Fraction)) +
   geom_boxplot(aes(fill=curated_cancer_type)) +
-  labs(x = "Cancer type", y = "Fraction") +  # 修改 x 轴标题和 y 轴范围
+  labs(x = "Cancer type", y = "Fraction") +  
   theme_classic()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
         strip.text.y =  element_text(size = 10),
         legend.position="none",
         plot.title = element_text(hjust = 0.5)) +
     ggtitle("CD8_HLA-DRA+ Tem") + #
-  ylim(0, 0.2)  # 修改 y 轴范围
+  ylim(0, 0.2)  
 ggsave("plots/figures/fig3F_CWAS.pdf",width=6, height=3.5)
 
 
 tmp <- frac_HLA_by_GSM[frac_HLA_by_GSM$patient.condition=="Cancer",]
 tmp$sample.condition[tmp$sample.condition=="tissue"]="Normal"
 tmp$sample.condition[tmp$sample.condition=="lymph.node"]="Lymph node"
-tmp$sample.condition[tmp$sample.condition=="LN_meta"]="Lymph node" #不分是否为转移淋巴结了
+tmp$sample.condition[tmp$sample.condition=="LN_meta"]="Lymph node" 
 tmp$sample.condition[tmp$sample.condition=="tumor"]="Tumor"
 tmp$sample.condition[tmp$sample.condition=="pbmc"]="PBMC"
-# tmp$Fraction <- tmp$Fraction * 100#
-
 
 table(tmp$sample.condition)
 
@@ -1176,19 +1024,15 @@ ggplot(tmp, aes(x=sample.condition, y=Fraction)) +
     geom_boxplot(aes(fill=sample.condition)) +
           scale_fill_manual(values = my_colors4) +
     geom_signif(comparisons = list(c("Normal", "Tumor"),
-#                                    c("Tumor","LN_meta"),
-#                                    c("LN_meta","Lymph node"),
                                    c("Lymph node", "PBMC"),
                                   c("Tumor", "PBMC"),
                                   c("Normal", "PBMC"),
-#                                   c("Lymph node", "Normal"),
                                   c("Lymph node", "Tumor")), 
                 map_signif_level=TRUE,
                 y_position = c(0.14,0.16,0.23,0.26,0.2)) +
 #     geom_dotplot(binaxis='y', stackdir='center', dotsize=0.1)+
     theme_classic()+
-  theme(#axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
-    strip.text.y =  element_text(size = 10),
+  theme(strip.text.y =  element_text(size = 10),
 #     legend.position="none",
     plot.title = element_text(hjust = 0.5))+
    ylab("Fraction")+
@@ -1203,7 +1047,6 @@ ggsave("plots/figures/figS5D_CWAS.pdf",width=5, height=4)
 frac_GZMB_by_GSM <- read.csv("eACA_scan/Fraction_df/frac_GZMB_by_CD8.csv",row.names = 1)
 
 tmp <- frac_GZMB_by_GSM[frac_GZMB_by_GSM$GSM.condition=="Cancer-pbmc",]
-# tmp$Fraction <- tmp$Fraction * 100#
 
 as.data.frame(table(tmp$curated_cancer_type))
 
@@ -1218,34 +1061,32 @@ type_counts <- tmp %>%
 
 # 按照中位数从大到小对 curated_cancer_type 进行排序
 sorted_types <- tmp %>%
-  filter(!is.na(curated_cancer_type)) %>%  # 删除 NA 值
+  filter(!is.na(curated_cancer_type)) %>% 
   filter(curated_cancer_type %in% type_counts$curated_cancer_type) %>%
   group_by(curated_cancer_type) %>%
   summarise(median_fraction = median(Fraction)) %>%
   arrange(desc(median_fraction)) %>%
   pull(curated_cancer_type)
 
-# 使用 ggplot2 绘制箱线图
 options(repr.plot.width=5, repr.plot.height=3.5)
 ggplot(tmp %>% filter(curated_cancer_type %in% sorted_types), aes(x = factor(curated_cancer_type, levels = sorted_types), y = Fraction)) +
   geom_boxplot(aes(fill=curated_cancer_type)) +
           scale_fill_manual(values = my_colors5) +
 
-  labs(x = "Cancer type", y = "Fraction") +  # 修改 x 轴标题和 y 轴范围
+  labs(x = "Cancer type", y = "Fraction") + 
   theme_classic()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
         strip.text.y =  element_text(size = 10),
         legend.position="none",
         plot.title = element_text(hjust = 0.5)) +
     ggtitle("CD8_GZMB+ Temra")
-#   ylim(0, 0.2)  # 修改 y 轴范围
+
 ggsave("plots/figures/figS6I_CWAS.pdf",width=5, height=3.5)
 
 
 
 
 tmp <- frac_GZMB_by_GSM[frac_GZMB_by_GSM$GSM.condition %in% c("Cancer-pbmc","Health-pbmc"),]
-# tmp$Fraction <- tmp$Fraction * 100#
 
 tmp$curated_cancer_type[tmp$patient.condition=="Health"]="Health"
 as.data.frame(table(tmp$curated_cancer_type))
@@ -1261,27 +1102,25 @@ type_counts <- tmp %>%
 
 # 按照中位数从大到小对 curated_cancer_type 进行排序
 sorted_types <- tmp %>%
-  filter(!is.na(curated_cancer_type)) %>%  # 删除 NA 值
+  filter(!is.na(curated_cancer_type)) %>%  
   filter(curated_cancer_type %in% type_counts$curated_cancer_type) %>%
   group_by(curated_cancer_type) %>%
   summarise(median_fraction = median(Fraction)) %>%
   arrange(desc(median_fraction)) %>%
   pull(curated_cancer_type)
 
-# 使用 ggplot2 绘制箱线图
 options(repr.plot.width=6, repr.plot.height=5)
 ggplot(tmp %>% filter(curated_cancer_type %in% sorted_types), aes(x = factor(curated_cancer_type, levels = sorted_types), y = Fraction)) +
   geom_boxplot(aes(fill=curated_cancer_type)) +
-  labs(x = "Cancer type", y = "Fraction") +  # 修改 x 轴标题和 y 轴范围
+  labs(x = "Cancer type", y = "Fraction") +  
   theme_classic()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
         strip.text.y =  element_text(size = 10),
         legend.position="none",
-        plot.title = element_text(hjust = 0.5))# +
-#   ylim(0, 0.2)  # 修改 y 轴范围
+        plot.title = element_text(hjust = 0.5))
 
 tmp <- frac_GZMB_by_GSM[frac_GZMB_by_GSM$sample.condition=="pbmc",]
-# tmp$Fraction <- tmp$Fraction * 100#
+
 
 table(tmp$patient.condition)
 
@@ -1317,10 +1156,10 @@ ggsave("plots/figures/figS6H_CWAS.pdf",width=2.5, height=2.5)
 tmp <- frac_GZMB_by_GSM[frac_GZMB_by_GSM$patient.condition=="Cancer",]
 tmp$sample.condition[tmp$sample.condition=="tissue"]="Normal"
 tmp$sample.condition[tmp$sample.condition=="lymph.node"]="Lymph node"
-tmp$sample.condition[tmp$sample.condition=="LN_meta"]="Lymph node" #不分是否为转移淋巴结了
+tmp$sample.condition[tmp$sample.condition=="LN_meta"]="Lymph node" 
 tmp$sample.condition[tmp$sample.condition=="tumor"]="Tumor"
 tmp$sample.condition[tmp$sample.condition=="pbmc"]="PBMC"
-# tmp$Fraction <- tmp$Fraction * 100#
+
 
 table(tmp$sample.condition)
 
@@ -1336,9 +1175,7 @@ ggplot(tmp, aes(x=sample.condition, y=Fraction)) +
     geom_boxplot(aes(fill=sample.condition)) +
           scale_fill_manual(values = my_colors4) +
 
-    geom_signif(comparisons = list(#c("Normal", "Tumor"),
-#                                    c("Tumor","LN_meta"),
-#                                    c("LN_meta","Lymph node"),
+    geom_signif(comparisons = list(
                                    c("Lymph node", "PBMC"),
                                   c("Tumor", "PBMC"),
                                   c("Normal", "PBMC")), 
@@ -1400,7 +1237,7 @@ frac_SPIB_by_GSM <- read.csv("eACA_scan/Fraction_df/frac_SPIB_by_DC.csv",row.nam
 tmp <- frac_SPIB_by_GSM[frac_SPIB_by_GSM$patient.condition=="Cancer",]
 tmp$sample.condition[tmp$sample.condition=="tissue"]="Normal"
 tmp$sample.condition[tmp$sample.condition=="lymph.node"]="Lymph node"
-tmp$sample.condition[tmp$sample.condition=="LN_meta"]="Lymph node" #不分是否为转移淋巴结了
+tmp$sample.condition[tmp$sample.condition=="LN_meta"]="Lymph node"
 tmp$sample.condition[tmp$sample.condition=="tumor"]="Tumor"
 tmp$sample.condition[tmp$sample.condition=="pbmc"]="PBMC"
 # tmp$Fraction <- tmp$Fraction * 100#
@@ -1448,7 +1285,6 @@ tmp_df <- aggregate(tmp$Fraction,list(tmp$Subtype),mean)
 tmp_df$x <- round(tmp_df$x,4)
 tmp_df
 
-# tmp$Subtype <- factor(tmp$Subtype,levels=c("disease", "tumor", "health"))
 
 options(repr.plot.width=3, repr.plot.height=4)
 ggplot(tmp, aes(x=Subtype, y=Fraction)) + 
@@ -1484,8 +1320,6 @@ table(tmp$Subtype)
 tmp_df <- aggregate(tmp$Fraction,list(tmp$Subtype),mean)
 tmp_df$x <- round(tmp_df$x,4)
 tmp_df
-
-# tmp$Subtype <- factor(tmp$Subtype,levels=c("disease", "tumor", "health"))
 
 options(repr.plot.width=3, repr.plot.height=4)
 ggplot(tmp, aes(x=Subtype, y=Fraction)) + 
@@ -1541,26 +1375,6 @@ DimPlot(tcell.batch.corrected, reduction = "umap", shuffle=TRUE, group.by = "cel
          cols = colorRampPalette(colors = c("#e2ad9f","#d37562","#d7c6de","#9b7aad",
                                             "#90aed2","#c0d6eb"))(length(unique(tcell.batch.corrected$cell_type1))))
 
-options(repr.plot.width=6, repr.plot.height=6)
-DimPlot(tcell.batch.corrected, reduction = "umap", shuffle=TRUE, group.by = "cell_type1",label=FALSE,
-         cols = colorRampPalette(colors = my_colors5)(length(unique(tcell.batch.corrected$cell_type1))))
-
-options(repr.plot.width=6, repr.plot.height=6)
-DimPlot(tcell.batch.corrected, reduction = "umap", shuffle=TRUE, group.by = "cell_type1",label=FALSE,
-       cols="Set3")
-
-options(repr.plot.width=6, repr.plot.height=6)
-DimPlot(tcell.batch.corrected, reduction = "umap", shuffle=TRUE, group.by = "cell_type1",label=FALSE,
-       cols="Set1")
-
-options(repr.plot.width=6, repr.plot.height=6)
-DimPlot(tcell.batch.corrected, reduction = "umap", shuffle=TRUE, group.by = "cell_type1",label=FALSE,
-       cols="Paired")
-
-options(repr.plot.width=6, repr.plot.height=6)
-DimPlot(tcell.batch.corrected, reduction = "umap", shuffle=TRUE, group.by = "cell_type1",label=FALSE,
-       cols="Dark2")
-
 tex <- subset(tcell.batch.corrected, subtype1 %in% c("CD8_TIM3+ Trm","CD8_LAYN+ Tex","CD8_CCL5+ Tex"))
 
 Idents(tex) <- "subtype1"
@@ -1582,12 +1396,7 @@ pdf("plots/figures/fig2B_expression.pdf",width=8, height=4)
 plot(p)
 dev.off()
 
-options(repr.plot.width=8, repr.plot.height=4)
-VlnPlot(tex, features = c("IL7R", "CCL5","CD44","GZMK","CD69",#canonical TMEM-associated markers
-"TCF7","TOX","PDCD1","HAVCR2", "LAG3","CTLA4","TIGIT",'LAYN','TNFRSF9','CXCL13','IFNG'),
-        stack=TRUE)+
-  RotatedAxis()+ NoLegend()
-
+# another color
 options(repr.plot.width=8, repr.plot.height=4)
 vln_features=c("IL7R", "CCL5","CD44","GZMK","CD69",#canonical TMEM-associated markers
 "TCF7","TOX","PDCD1","HAVCR2", "LAG3","CTLA4","TIGIT",'LAYN','TNFRSF9','CXCL13','IFNG')
@@ -2000,26 +1809,6 @@ monocle::plot_cell_trajectory(cds_nk, color_by = "Pseudotime") +
   scale_color_gradient(low = "#89afd2", high = "#ef8775")
 # dev.off()
 
-# font_theme <- theme(
-#   plot.title = element_text(size = 8, face = "bold", family = "Arial"), # 修改标题字体、字号、字体系列
-#   axis.title.x = element_text(size = 7, family = "Arial"),  # 修改x轴标题的字号和字体系列
-#   axis.title.y = element_text(size = 7, family = "Arial"),  # 修改y轴标题的字号和字体系列
-#   axis.text.x = element_text(size = 7, family = "Arial"),   # 修改x轴标签的字号和字体系列
-#   axis.text.y = element_text(size = 7, family = "Arial"),   # 修改y轴标签的字号和字体系列
-#   legend.title = element_text(size = 7, family = "Arial"),  # 修改图例标题的字号和字体系列
-#   legend.text = element_text(size = 7, family = "Arial")    # 修改图例标签的字号和字体系列
-# )
-
-font_theme <- theme(
-  plot.title = element_text(size = 14, face = "bold", family = "Arial"), # 修改标题字体、字号、字体系列
-  axis.title.x = element_text(size = 12, family = "Arial"),  # 修改x轴标题的字号和字体系列
-  axis.title.y = element_text(size = 12, family = "Arial"),  # 修改y轴标题的字号和字体系列
-  axis.text.x = element_text(size = 12, family = "Arial"),   # 修改x轴标签的字号和字体系列
-  axis.text.y = element_text(size = 12, family = "Arial"),   # 修改y轴标签的字号和字体系列
-  legend.title = element_text(size = 12, family = "Arial"),  # 修改图例标题的字号和字体系列
-  legend.text = element_text(size = 12, family = "Arial")    # 修改图例标签的字号和字体系列
-)
-
 #from subtyping_epi
 epi_go <- readRDS("processed_data/data_B2-19/cell_typing/epithelial/GO_all_conditions.rds")
 
@@ -2419,8 +2208,6 @@ ggsave(p_cell_type1,
 
 
 
-# epithelial.batch.corrected <- readRDS("plots/data/epithelial_new_meta.rds")
-
 kegg_patient_condition_mean <- readRDS("processed_data/data_B2-19/cell_typing/epithelial/patient_condition_mean_GSVA.rds")
 
 # by patient condition
@@ -2681,314 +2468,4 @@ make_heatmap_ggplot("Prioritized ligands","Predicted target genes",
 theme(axis.text.x = element_text(face = "italic")) + 
 scale_fill_gradient2(low = "#c98df8", high = "#9930ef")
 ggsave("plots/figures/figS11C_nichenet.pdf",width=4, height=3)
-
-
-
-library(ggplot2)
-library(dplyr)
-library(Seurat)
-library(GSVA)
-
-library(pheatmap)
-library(patchwork)
-library(msigdbr)
-
-
-myeloid.batch.corrected <- readRDS("processed_data/data_B2-19/cell_typing/myeloid/myeloid.batch.corrected_ct_subtype.rds")
-DefaultAssay(myeloid.batch.corrected)<-"RNA"
-
-
-subtype_mean_myeloid=data.frame(row.names = rownames(myeloid.batch.corrected))
-for(i in unique(myeloid.batch.corrected$subtype1)){
-#     print(i)
-    sub_i=subset(myeloid.batch.corrected, subset=subtype1==i)
-    subtype_mean_myeloid[,as.character(i)]=apply(sub_i@assays$RNA@data, 1, mean)
-}
-
-# find differential pathway -----------------------------------------------
-m_df = msigdbr(species = "Homo sapiens", category = "H")
-msigdbr_list = split(x = m_df$gene_symbol, f = m_df$gs_name)
-
-dim(subtype_mean_myeloid)
-
-# packageVersion("matrixStats")
-
-# kegg <- gsva(as.matrix(subtype_mean_myeloid), msigdbr_list, kcdf="Gaussian",method = "gsva",parallel.sz=10)
-
-
-# saveRDS(kegg,"processed_data/data_B2-19/cell_typing/myeloid/subtype1_GSVA.rds")
-
-kegg <- readRDS("processed_data/data_B2-19/cell_typing/myeloid/subtype1_GSVA.rds")
-
-# by cell_type1
-options(repr.plot.width=12, repr.plot.height=10)
-p_cell_type1<-pheatmap(kegg, show_rownames=1, show_colnames=T)
-
-epithelial.batch.corrected <- readRDS("plots/data/epithelial_new_meta.rds")
-
-epithelial.batch.corrected@meta.data[,c('LN_condition.LN_station','patient_condition.region','patient_condition.LN_condition',
-       'LN_condition.Lauren','condition')] <- NULL
-
-DefaultAssay(epithelial.batch.corrected)
-
-epithelial.batch.corrected$patient_condition.LN_condition <- paste(epithelial.batch.corrected$patient_condition, 
-                                                                   epithelial.batch.corrected$LN_condition, sep = "_")
-table(epithelial.batch.corrected$patient_condition.LN_condition)
-
-patient_condition_mean=data.frame(row.names = rownames(epithelial.batch.corrected))
-for(i in c("Meta_Pri.GC", "Neg_Pri.GC")){
-    sub_i=subset(epithelial.batch.corrected, subset=patient_condition.LN_condition==i)
-    patient_condition_mean[,as.character(i)]=apply(sub_i@assays$RNA@data, 1, mean)
-}
-
-# find differential pathway -----------------------------------------------
-m_df = msigdbr(species = "Homo sapiens", category = "H")
-msigdbr_list = split(x = m_df$gene_symbol, f = m_df$gs_name)
-
-kegg_patient_condition_mean <- gsva(as.matrix(patient_condition_mean), msigdbr_list, 
-                                    kcdf="Gaussian",method = "gsva",parallel.sz=10)
-
-
-# saveRDS(kegg_patient_condition_mean,"processed_data/data_B2-19/cell_typing/epithelial/patient_condition_mean_GSVA.rds")
-
-kegg_patient_condition_mean <- readRDS("processed_data/data_B2-19/cell_typing/epithelial/patient_condition_mean_GSVA.rds")
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_patient_condition_mean<-pheatmap(kegg_patient_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-epithelial.batch.corrected$Lauren.LN_condition <- paste(epithelial.batch.corrected$Lauren, epithelial.batch.corrected$LN_condition, sep = "_")
-table(epithelial.batch.corrected$Lauren.LN_condition)
-
-Lauren.LN_condition_mean=data.frame(row.names = rownames(epithelial.batch.corrected))
-for(i in c("Diffuse_Pri.GC", "Intestinal_Pri.GC")){
-    sub_i=subset(epithelial.batch.corrected, subset=Lauren.LN_condition==i)
-    Lauren.LN_condition_mean[,as.character(i)]=apply(sub_i@assays$RNA@data, 1, mean)
-}
-
-kegg_Lauren.LN_condition_mean <- gsva(as.matrix(Lauren.LN_condition_mean), msigdbr_list, kcdf="Gaussian",method = "gsva",parallel.sz=10)
-
-
-# saveRDS(kegg_Lauren.LN_condition_mean,"processed_data/data_B2-19/cell_typing/epithelial/Lauren.LN_condition_mean_GSVA.rds")
-
-kegg_Lauren.LN_condition_mean <- readRDS("processed_data/data_B2-19/cell_typing/epithelial/Lauren.LN_condition_mean_GSVA.rds")
-
-head(kegg_Lauren.LN_condition_mean)
-
-custom_colors <- rev(c("#4792c4", "#9cc2d7", "#f5f4e9", "#f7ddc6", "#e7a988", "#c86955"))
-dotplot(epi_go,showCategory=3)+ 
-  scale_color_gradientn(colors = custom_colors) +
-
-head(kegg_Lauren.LN_condition_mean)
-
-# 缩放数据到 -1 到 1 范围
-kegg_Lauren.LN_condition_mean <- apply(kegg_Lauren.LN_condition_mean, 2, function(x) pmax(pmin(x, 1), -1))
-
-# 自定义颜色断点和颜色
-my.breaks <- c(seq(-1, 0, by = 0.1), seq(0.1, 1, by = 0.1))
-# my.colors <- c(
-#     colorRampPalette(colors = c("#89afd2", "white"))(length(my.breaks) / 2),
-#     colorRampPalette(colors = c("white", "#ef8775"))(length(my.breaks) / 2)
-# )
-custom_colors <- colorRampPalette(colors = c("#4792c4", "#fdf8b4", "#c86955"))(20)
-
-# 调整图表宽度和高度
-options(repr.plot.width = 6, repr.plot.height = 3)
-
-# 绘制热图
-p_Lauren.LN_condition_mean <- pheatmap(
-    rescale(kegg_Lauren.LN_condition_mean, to=c(-1, 1))[c("HALLMARK_ANGIOGENESIS", "HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION", 
-                                    "HALLMARK_OXIDATIVE_PHOSPHORYLATION", "HALLMARK_GLYCOLYSIS"), ], 
-    show_rownames = 1, show_colnames = T,
-    cluster_cols = FALSE, cluster_rows = FALSE,
-    breaks = my.breaks,
-color = custom_colors)
-  
-    
-    # color = my.colors
-
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_Lauren.LN_condition_mean<-pheatmap(kegg_Lauren.LN_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-library(scales)
-kegg_Lauren.LN_condition_mean <- t(apply(kegg_Lauren.LN_condition_mean, 1, rescale, to=c(-1, 1)))
-
-rescale(kegg_Lauren.LN_condition_mean, to=c(-1, 1))
-
-library(scales)
-kegg_Lauren.LN_condition_mean <- t(apply(kegg_Lauren.LN_condition_mean, 1, rescale, to=c(-1, 1)))
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_Lauren.LN_condition_mean<-pheatmap(kegg_Lauren.LN_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_Lauren.LN_condition_mean<-pheatmap(kegg_Lauren.LN_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-p_Lauren.LN_condition_mean
-
-# ggsave(p_seurat_clusters,
-#        filename = "pathway_results/GSVA_H_pathways_for_seurat_clusters_malign.pdf",width=12,height=9)
-
-
-
-myeloid_tmp <- myeloid.batch.corrected
-
-DefaultAssay(myeloid_tmp) <- "integrated"
-
-# subset big subtype to 500 cells
-set.seed=0
-cell_use <- NULL
-for(subtype in unique(myeloid_tmp$subtype1)){
-    print(subtype)
-    # print(sum(myeloid_tmp$subtype1==subtype))
-    # if(sum(myeloid_tmp$subtype1==subtype) > 500){
-        rowname <- sample(colnames(myeloid_tmp)[myeloid_tmp$subtype1==subtype], 10, replace = FALSE)
-    # }else{
-    #     rowname <- colnames(myeloid_tmp)[myeloid_tmp$subtype1==subtype]
-    # }
-    cell_use <- c(cell_use,rowname)
-    # print(length(cell_use))
-}
-
-myeloid_tmp_use <- subset(myeloid_tmp,cells=cell_use)
-dim(myeloid_tmp_use)
-
-tmp_myeloid_markers <- FindAllMarkers(myeloid_tmp_use, only.pos = TRUE)
-
-tmp_myeloid_markers <- tmp_myeloid_markers %>%
-    group_by(cluster) %>%
-    slice_max(n = 4, order_by = avg_log2FC)
-
-dim(tmp_myeloid_markers)
-
-options(repr.plot.width=8, repr.plot.height=3)
-my.colors <- c(
-    colorRampPalette(colors = c("#89afd2", "white"))(10),
-    colorRampPalette(colors = c("white", "#ef8775"))(10))
-
-DoHeatmap(object = myeloid_tmp_use,
-          features = tmp_myeloid_markers$gene,
-          group.bar = F,draw.lines = F)+
-  scale_fill_gradientn(colors = c("#89afd2", "white", "#ef8775"))
-
-options(repr.plot.width=6, repr.plot.height=5)
-n=length(unique(GC$cell_type))
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = DiscretePalette(n, palette = "alphabet", shuffle = FALSE))
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-n=length(unique(GC$cell_type))
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = DiscretePalette(n, palette = "alphabet2", shuffle = FALSE))
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-n=length(unique(GC$cell_type))
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = DiscretePalette(n, palette = "glasbey", shuffle = FALSE))
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-n=length(unique(GC$cell_type))
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = DiscretePalette(n, palette = "polychrome", shuffle = FALSE))
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-n=length(unique(GC$cell_type))
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = DiscretePalette(n, palette = "stepped", shuffle = FALSE))
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-n=length(unique(GC$cell_type))
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = DiscretePalette(n, palette = "parade", shuffle = FALSE))
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = "Set3")
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = "Set2")
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = "Paired")
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-options(repr.plot.width=6, repr.plot.height=5)
-DimPlot(GC, reduction = "umap", shuffle=TRUE, group.by = "cell_type",label=F,
-        cols = "Dark2")
-# "alphabet", "alphabet2", "glasbey", "polychrome", "stepped", and "parade". 
-
-
-
-# # 安装并加载必要的包
-# install.packages("ggplot2")
-# install.packages("scales")
-
-library(ggplot2)
-library(scales)
-
-# 创建示例数据集
-set.seed(42)
-data <- data.frame(
-  Value = rnorm(100)
-)
-
-# 自定义渐变色函数
-low_high_gradient <- scale_color_gradient2(low = "#89afd2", mid = "yellow", high = "#ef8775", midpoint = 0)
-
-# 绘制散点图
-ggplot(data, aes(x = Value, y = rnorm(100), color = Value)) +
-  geom_point(size = 3) +
-  low_high_gradient +
-  ggtitle("Scatter Plot with Custom Low Saturation Gradient") +
-  theme_minimal()
-
-
-# # 安装并加载必要的包
-# install.packages("ggplot2")
-# install.packages("scales")
-
-library(ggplot2)
-library(scales)
-
-# 创建示例数据集
-set.seed(42)
-data <- data.frame(
-  Value = rnorm(100)
-)
-
-# 自定义渐变色函数
-low_high_gradient <- scale_color_gradient2(low = "#89afd2", high = "#ef8775")
-
-# 绘制散点图
-ggplot(data, aes(x = Value, y = rnorm(100), color = Value)) +
-  geom_point(size = 3) +
-  low_high_gradient +
-  ggtitle("Scatter Plot with Custom Low Saturation Gradient") +
-  theme_minimal()
 

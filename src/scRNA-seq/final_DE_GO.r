@@ -560,12 +560,12 @@ msigdbr_list = split(x = m_df$gene_symbol, f = m_df$gs_name)
 
 dim(subtype_mean_myeloid)
 
-# packageVersion("matrixStats")
+packageVersion("matrixStats")
 
-# kegg <- gsva(as.matrix(subtype_mean_myeloid), msigdbr_list, kcdf="Gaussian",method = "gsva",parallel.sz=10)
+kegg <- gsva(as.matrix(subtype_mean_myeloid), msigdbr_list, kcdf="Gaussian",method = "gsva",parallel.sz=10)
 
 
-# saveRDS(kegg,"processed_data/data_B2-19/cell_typing/myeloid/subtype1_GSVA.rds")
+saveRDS(kegg,"processed_data/data_B2-19/cell_typing/myeloid/subtype1_GSVA.rds")
 
 kegg <- readRDS("processed_data/data_B2-19/cell_typing/myeloid/subtype1_GSVA.rds")
 
@@ -598,7 +598,7 @@ kegg_patient_condition_mean <- gsva(as.matrix(patient_condition_mean), msigdbr_l
                                     kcdf="Gaussian",method = "gsva",parallel.sz=10)
 
 
-# saveRDS(kegg_patient_condition_mean,"processed_data/data_B2-19/cell_typing/epithelial/patient_condition_mean_GSVA.rds")
+saveRDS(kegg_patient_condition_mean,"processed_data/data_B2-19/cell_typing/epithelial/patient_condition_mean_GSVA.rds")
 
 kegg_patient_condition_mean <- readRDS("processed_data/data_B2-19/cell_typing/epithelial/patient_condition_mean_GSVA.rds")
 
@@ -621,80 +621,7 @@ for(i in c("Diffuse_Pri.GC", "Intestinal_Pri.GC")){
 kegg_Lauren.LN_condition_mean <- gsva(as.matrix(Lauren.LN_condition_mean), msigdbr_list, kcdf="Gaussian",method = "gsva",parallel.sz=10)
 
 
-# saveRDS(kegg_Lauren.LN_condition_mean,"processed_data/data_B2-19/cell_typing/epithelial/Lauren.LN_condition_mean_GSVA.rds")
-
-kegg_Lauren.LN_condition_mean <- readRDS("processed_data/data_B2-19/cell_typing/epithelial/Lauren.LN_condition_mean_GSVA.rds")
-
-head(kegg_Lauren.LN_condition_mean)
-
-custom_colors <- rev(c("#4792c4", "#9cc2d7", "#f5f4e9", "#f7ddc6", "#e7a988", "#c86955"))
-dotplot(epi_go,showCategory=3)+ 
-  scale_color_gradientn(colors = custom_colors) +
-
-head(kegg_Lauren.LN_condition_mean)
-
-# 缩放数据到 -1 到 1 范围
-kegg_Lauren.LN_condition_mean <- apply(kegg_Lauren.LN_condition_mean, 2, function(x) pmax(pmin(x, 1), -1))
-
-# 自定义颜色断点和颜色
-my.breaks <- c(seq(-1, 0, by = 0.1), seq(0.1, 1, by = 0.1))
-# my.colors <- c(
-#     colorRampPalette(colors = c("#89afd2", "white"))(length(my.breaks) / 2),
-#     colorRampPalette(colors = c("white", "#ef8775"))(length(my.breaks) / 2)
-# )
-custom_colors <- colorRampPalette(colors = c("#4792c4", "#fdf8b4", "#c86955"))(20)
-
-# 调整图表宽度和高度
-options(repr.plot.width = 6, repr.plot.height = 3)
-
-# 绘制热图
-p_Lauren.LN_condition_mean <- pheatmap(
-    rescale(kegg_Lauren.LN_condition_mean, to=c(-1, 1))[c("HALLMARK_ANGIOGENESIS", "HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION", 
-                                    "HALLMARK_OXIDATIVE_PHOSPHORYLATION", "HALLMARK_GLYCOLYSIS"), ], 
-    show_rownames = 1, show_colnames = T,
-    cluster_cols = FALSE, cluster_rows = FALSE,
-    breaks = my.breaks,
-color = custom_colors)
-  
-    
-    # color = my.colors
-
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_Lauren.LN_condition_mean<-pheatmap(kegg_Lauren.LN_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-library(scales)
-kegg_Lauren.LN_condition_mean <- t(apply(kegg_Lauren.LN_condition_mean, 1, rescale, to=c(-1, 1)))
-
-rescale(kegg_Lauren.LN_condition_mean, to=c(-1, 1))
-
-library(scales)
-kegg_Lauren.LN_condition_mean <- t(apply(kegg_Lauren.LN_condition_mean, 1, rescale, to=c(-1, 1)))
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_Lauren.LN_condition_mean<-pheatmap(kegg_Lauren.LN_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-# by patient condition
-options(repr.plot.width=6, repr.plot.height=3)
-p_Lauren.LN_condition_mean<-pheatmap(kegg_Lauren.LN_condition_mean[c("HALLMARK_ANGIOGENESIS","HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION",
-                                                               "HALLMARK_OXIDATIVE_PHOSPHORYLATION","HALLMARK_GLYCOLYSIS"),], 
-                                   show_rownames=1, show_colnames=T,
-                                   cluster_cols = FALSE,cluster_rows = FALSE)
-
-p_Lauren.LN_condition_mean
-
-# ggsave(p_seurat_clusters,
-#        filename = "pathway_results/GSVA_H_pathways_for_seurat_clusters_malign.pdf",width=12,height=9)
-
-
+saveRDS(kegg_Lauren.LN_condition_mean,"processed_data/data_B2-19/cell_typing/epithelial/Lauren.LN_condition_mean_GSVA.rds")
 
 library(tidyverse)
 library(Seurat)
