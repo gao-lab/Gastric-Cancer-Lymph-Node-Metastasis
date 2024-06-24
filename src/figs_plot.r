@@ -965,9 +965,12 @@ plot(fig2f)
 ggsave("plots/figures/fig2F_CWAS.pdf",fig2f,width=5, height=4)
 # +coord_flip()
 
-frac_HLA_by_GSM <- read.csv("eACA_scan/Fraction_df/frac_HLA_by_CD8.csv",row.names = 1)
+HLA_PT <- read.csv("eACA_scan/Fraction_df/frac_HLA_in_PT.csv",row.names = 1)
 
-tmp <- frac_HLA_by_GSM[frac_HLA_by_GSM$GSM.condition=="Cancer-tumor",]
+table(HLA_PT$GSM.condition=="Cancer-tumor")
+table(HLA_PT$is.primary.tumor=="Y")
+
+tmp <- HLA_PT[HLA_PT$is.primary.tumor=="Y",]
 
 as.data.frame(table(tmp$curated_cancer_type))
 
@@ -1002,6 +1005,8 @@ ggplot(tmp %>% filter(curated_cancer_type %in% sorted_types), aes(x = factor(cur
   ylim(0, 0.2)  
 ggsave("plots/figures/fig3F_CWAS.pdf",width=6, height=3.5)
 
+
+frac_HLA_by_GSM <- read.csv("eACA_scan/Fraction_df/frac_HLA_by_CD8.csv",row.names = 1)
 
 tmp <- frac_HLA_by_GSM[frac_HLA_by_GSM$patient.condition=="Cancer",]
 tmp$sample.condition[tmp$sample.condition=="tissue"]="Normal"
