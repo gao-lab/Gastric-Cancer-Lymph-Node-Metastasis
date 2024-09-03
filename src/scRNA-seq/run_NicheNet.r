@@ -155,28 +155,7 @@ colnames(vis_ligand_receptor_network_strict) = order_ligands_receptor %>% make.n
 p_ligand_receptor_network_strict = vis_ligand_receptor_network_strict %>% t() %>% make_heatmap_ggplot("Ligands","Receptors", color = "mediumvioletred", x_axis_position = "top",legend_title = "Prior interaction potential\n(bona fide)")
 p_ligand_receptor_network_strict
 
-# # infer ligand target paths
-# ligand_tf_matrix = readRDS(url("https://zenodo.org/record/3260758/files/ligand_tf_matrix.rds"))
-# sig_network = readRDS(url("https://zenodo.org/record/3260758/files/signaling_network.rds"))
-# gr_network = readRDS(url("https://zenodo.org/record/3260758/files/gr_network.rds"))
 
-ligands_all = "IL10" # this can be a list of multiple ligands if required
-targets_all = c("CD274")
-
-active_signaling_network = get_ligand_signaling_path(ligand_tf_matrix = ligand_tf_matrix, 
-                                                     ligands_all = ligands_all, targets_all = targets_all, 
-                                                     weighted_networks = weighted_networks,
-                                                     top_n_regulators = 4)
-
-# For better visualization of edge weigths: normalize edge weights to make them comparable between signaling and gene regulatory interactions
-active_signaling_network_min_max = active_signaling_network
-active_signaling_network_min_max$sig = active_signaling_network_min_max$sig %>% mutate(weight = ((weight-min(weight))/(max(weight)-min(weight))) + 0.75)
-active_signaling_network_min_max$gr = active_signaling_network_min_max$gr %>% mutate(weight = ((weight-min(weight))/(max(weight)-min(weight))) + 0.75)
-
-graph_min_max = diagrammer_format_signaling_graph(signaling_graph_list = active_signaling_network_min_max, ligands_all = ligands_all, targets_all = targets_all, sig_color = "indianred", gr_color = "steelblue")
-# pdf("nichenet/LGALS3_CCL20_paths.pdf")
-DiagrammeR::render_graph(graph_min_max, layout = "tree")
-# dev.off()
 
 
 
